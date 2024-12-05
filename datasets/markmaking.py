@@ -1,5 +1,6 @@
 import cv2
 import numpy as np
+import os
 from PIL import Image
 
 def create_random_mask(image_path, output_mask_path, mask_size=(50, 50), num_masks=5):
@@ -11,10 +12,11 @@ def create_random_mask(image_path, output_mask_path, mask_size=(50, 50), num_mas
     :param mask_size: 각 마스크 영역의 크기 (width, height)
     :param num_masks: 생성할 랜덤 마스크의 개수
     """
+    print(image_path)
     # 원본 이미지 로드
     image = cv2.imread(image_path)
     if image is None:
-        raise ValueError("이미지를 로드할 수 없습니다. 경로를 확인하세요.")
+        raise ValueError("Unable to load the image. Please check the path.")
 
     # 이미지와 동일한 크기의 빈 마스크 생성 (검은색)
     mask = np.zeros_like(image, dtype=np.uint8)
@@ -37,13 +39,10 @@ def create_random_mask(image_path, output_mask_path, mask_size=(50, 50), num_mas
 
     # PIL로 보기 쉽게 변환하여 반환
     return Image.fromarray(mask)
+if __name__ == '__main__':
+    # 사용 예시
+    image_path = os.path.join(os.path.dirname(__file__), 'images/test.png') # 원본 이미지 경로
+    output_mask_path = os.path.join(os.path.dirname(__file__), 'output/output1.png')  # 생성된 마스크 저장 경로
 
-# 사용 예시
-image_path = "input_image.jpg"  # 원본 이미지 경로
-output_mask_path = "random_mask.png"  # 생성된 마스크 저장 경로
-
-# 랜덤 마스크 생성 (50x50 크기의 마스크를 5개 생성)
-random_mask = create_random_mask(image_path, output_mask_path, mask_size=(50, 50), num_masks=5)
-
-# 결과 이미지 확인 (Jupyter Notebook에서 사용 시)
-random_mask.show()
+    # 랜덤 마스크 생성 (50x50 크기의 마스크를 5개 생성)
+    random_mask = create_random_mask(image_path, output_mask_path, mask_size=(200, 200), num_masks=1)
