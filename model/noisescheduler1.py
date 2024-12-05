@@ -18,5 +18,3 @@ class NoiseScheduler:
         return sqrt_alpha_cumprod[:, None, None, None] * x_0 + \
                sqrt_one_minus_alpha_cumprod[:, None, None, None] * noise
 
-
-        
