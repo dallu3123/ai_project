@@ -41,7 +41,7 @@ class UNet(nn.Module):
     def __init__(self, time_emb_dim=256):
         super().__init__()
         self.time_embedding = SinusoidalPositionEmbeddings(time_emb_dim)
-
+        #입력 채널 + mask이미지 = 3 + 1 = 4
         self.block1 = Block(4,64, time_emb_dim)
         self.block2 = Block(64, 128, time_emb_dim, downsample=True)
         self.block3 = Block(128, 256, time_emb_dim, downsample=True)
