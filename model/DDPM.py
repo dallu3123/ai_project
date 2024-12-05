@@ -12,7 +12,7 @@ class SinusoidalPositionEmbeddings(nn.Module):
     
     def forward(self, timesteps):
         half_dim = self.embedding_dim // 2
-        embedding = math.log(10000) / (half_dim-1)
+        embeddings = math.log(10000) / (half_dim-1)
         embeddings = torch.exp(torch.arange(half_dim, device=timesteps.device) * -embeddings)
         embeddings = timesteps[:, None] * embeddings[None, :]
         return torch.cat((embeddings.sin(), embeddings.cos()), dim=-1)
@@ -75,5 +75,14 @@ def ddpm_loss(model, x_0, timesteps, noise_scheduler):
     return F.mse_loss(predicted_noise, noise)
 
 def ddpm_inpainting_loss(model, x_0, mask, timesteps, noise_scheduler):
-    #구현 필요
-    return 0
+    """
+    #손상된 영역만 손실 계산
+    #Inpainting_loss function
+    """
+    noise = torch.rand_like(x_0)
+    x_t = noise_scheduler.add_noise(x_0, noise, timesteps)
+    masked_x_t = x_t * mask + x_0 * (1 - mask)
+    predicted_noise = model(masked_x_t, mask, timesteps)
+
+    return F.mse_loss(predicted_noise * mask, noise * mask)
+
