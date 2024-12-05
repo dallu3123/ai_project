@@ -42,7 +42,7 @@ class UNet(nn.Module):
         super().__init__()
         self.time_embedding = SinusoidalPositionEmbeddings(time_emb_dim)
 
-        self.block1 = Block(3,64, time_emb_dim)
+        self.block1 = Block(4,64, time_emb_dim)
         self.block2 = Block(64, 128, time_emb_dim, downsample=True)
         self.block3 = Block(128, 256, time_emb_dim, downsample=True)
 
@@ -52,8 +52,11 @@ class UNet(nn.Module):
 
         self.final_conv = nn.Conv2d(64, 3, kernel_size=1)
 
-    def forward(self, x, t):
+    def forward(self, x, mask, t):
         t_emb = self.time_embedding(t)
+        #입력 채널 확장: 이미지 + 마스크 
+        x=torch.cat([x, mask], dim=1)
+    
         x1 = self.block1(x, t_emb)
         x2 = self.block2(x1, t_emb)
         x3 = self.block3(x2, t_emb)
@@ -70,3 +73,7 @@ def ddpm_loss(model, x_0, timesteps, noise_scheduler):
     x_t = noise_scheduler.add_noise(x_0, noise, timesteps)
     predicted_noise = model(x_t, timesteps)
     return F.mse_loss(predicted_noise, noise)
+
+def ddpm_inpainting_loss(model, x_0, mask, timesteps, noise_scheduler):
+    #구현 필요
+    return 0
