@@ -90,17 +90,15 @@ class NoiseScheduler:
         self.timesteps = timesteps
         self.betas = torch.linspace(beta_start, beta_end, timesteps)
         self.alphas = 1.0 - self.betas
-        self.alpha_cumprod = torch.cumprod(self.alphas, dim=0) #dim 차원에 있는 input 요소의 누적 곱을 반환
+        self.alpha_cumprod = torch.cumprod(self.alphas, dim=0).to(device) #dim 차원에 있는 input 요소의 누적 곱을 반환
         self.device = device
 
     def add_noise(self, x_0, noise, t):
-        t = t.to(self.alpha_cumprod.device)
-        print(t.device)
+        t = t.to(self.device)
         sqrt_alpha_cumprod = self.alpha_cumprod[t] ** 0.5
-        sqrt_alpha_cumprod = sqrt_alpha_cumprod.to(self.device)
         sqrt_one_minus_alpha_cumprod = (1 - self.alpha_cumprod[t]) ** 0.5
-        sqrt_one_minus_alpha_cumprod = sqrt_one_minus_alpha_cumprod.to(self.device)
-        print(sqrt_one_minus_alpha_cumprod.device, x_0.device)
-        return sqrt_alpha_cumprod[:, None, None, None] * x_0 + \
-               sqrt_one_minus_alpha_cumprod[:, None, None, None] * noise
 
+        return (
+            sqrt_alpha_cumprod[:, None, None, None] * x_0 +
+            sqrt_one_minus_alpha_cumprod[:, None, None, None] * noise
+        )

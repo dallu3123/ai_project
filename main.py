@@ -3,7 +3,7 @@ import torch
 from model.DDPM import UNet
 \
 from model.DDPM import ddpm_inpainting_loss, NoiseScheduler
-
+from datasets.dataset import ArtDataset
 from torchvision import transforms, datasets
 from torch.utils.data import DataLoader
 
